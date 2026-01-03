@@ -52,13 +52,13 @@ function clear() {
 const vs = [
     {x: 0.5, y: 0.5, z: 0.5},
     {x: -0.5, y: 0.5, z: 0.5},
-    {x: 0.5, y: -0.5, z: 0.5},
     {x: -0.5, y: -0.5, z: 0.5},
+    {x: 0.5, y: -0.5, z: 0.5},
     
     {x: 0.5, y: 0.5, z: -0.5},
     {x: -0.5, y: 0.5, z: -0.5},
-    {x: 0.5, y: -0.5, z: -0.5},
-    {x: -0.5, y: -0.5, z: -0.5}
+    {x: -0.5, y: -0.5, z: -0.5},
+    {x: 0.5, y: -0.5, z: -0.5}
     
 ]
 
@@ -67,6 +67,15 @@ const dots = [
     {x: 0.5, y: 0, z: 1},
     {x: 0, y: 0.5, z: 1},
     {x: 0,  y: -0.5,z:1 }
+]
+
+const fs = [
+    [0, 1, 2, 3], 
+    [4, 5, 6, 7],
+    [0, 4],
+    [1, 5], 
+    [2, 6], 
+    [3, 7]
 ]
 const FPS = 60 
 let dz = 2
@@ -82,12 +91,22 @@ function frame() {
     clear()
     for (const v of vs) {
         const rotated_v = rotate_xyz(v, angle)
-        point(screen(project(translateZ(rotated_v, dz))))
+        
+        /*
         for (const dot of dots) {
             const dotToLine = screen(project(dot))
             line(screen(project(translateZ(rotated_v, dz))), dotToLine)
         }
-        
+        */
+       for (const f of fs) {
+            for (let i = 0; i < f.length; ++i){
+                const rotated_v1 = rotate_xyz(vs[f[i]], angle)
+                const rotated_v2 = rotate_xyz(vs[(f[(i + 1)  % f.length])], angle)
+                const v1Screen = screen(project(translateZ(rotated_v1, dz)))
+                const v2Screen = screen(project(translateZ(rotated_v2, dz)))
+                line(v1Screen, v2Screen)
+            }
+       }
     }   
     setTimeout(frame, 1000/FPS)
 }

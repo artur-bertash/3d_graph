@@ -61,6 +61,13 @@ const vs = [
     {x: -0.5, y: -0.5, z: -0.5}
     
 ]
+
+const dots = [
+    {x: -0.5, y: 0, z: 1},
+    {x: 0.5, y: 0, z: 1},
+    {x: 0, y: 0.5, z: 1},
+    {x: 0,  y: -0.5,z:1 }
+]
 const FPS = 60 
 let dz = 2
 let angle = 0
@@ -68,13 +75,19 @@ let angle = 0
 function frame() {  
    
     const dt = 1/FPS
-    dz += 1 * dt
+    //dz += 1 * dt
 
-    angle += 2 * Math.PI* dt
+    angle += 0.5 * Math.PI* dt
 
     clear()
     for (const v of vs) {
-        point(screen(project(translateZ(rotate_xyz(v, angle), dz))))
+        const rotated_v = rotate_xyz(v, angle)
+        point(screen(project(translateZ(rotated_v, dz))))
+        for (const dot of dots) {
+            const dotToLine = screen(project(dot))
+            line(screen(project(translateZ(rotated_v, dz))), dotToLine)
+        }
+        
     }   
     setTimeout(frame, 1000/FPS)
 }
@@ -99,6 +112,16 @@ function rotate_xyz({x, y, z}, angle) {
     }
 }
 
+
+function line(p1, p2) {
+    ctx.strokeStyle = "green"
+
+    ctx.beginPath()
+    ctx.moveTo(p1.x, p1.y)
+    ctx.lineTo(p2.x, p2.y)
+
+    ctx.stroke()
+}
 
 window.addEventListener("resize", resize)
 

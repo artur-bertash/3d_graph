@@ -1,0 +1,106 @@
+const BACKGROUND = "black"
+const FOREGROUND = "green"
+
+const canvas = document.getElementById("graph")
+
+const ctx = canvas.getContext("2d")
+
+function resize() { 
+    canvas.width = window.innerWidth
+    canvas.height = window.innerHeight
+
+    ctx.fillStyle = BACKGROUND
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+    
+
+    
+}
+resize()
+
+function screen(p) {
+    // converts -1 to 1 to width/height num
+    return {
+        x: (p.x + 1)/2 * canvas.width,
+        y: (1 - (p.y + 1)/2) * canvas.height
+    }
+    
+}
+
+function point({x, y}) {
+    const size = 20
+    ctx.fillStyle = FOREGROUND
+    ctx.fillRect(x - size/2, y - size/2, size, size)
+
+}
+
+
+
+function project({x, y, z}) {
+    //applies perspective projection
+    return {
+        x: x/z,
+        y: y/z
+    }
+}
+
+function clear() {
+    ctx.fillStyle = BACKGROUND
+    ctx.fillRect(0,0, canvas.width, canvas.height)
+}
+
+const vs = [
+    {x: 0.5, y: 0.5, z: 0.5},
+    {x: -0.5, y: 0.5, z: 0.5},
+    {x: 0.5, y: -0.5, z: 0.5},
+    {x: -0.5, y: -0.5, z: 0.5},
+    
+    {x: 0.5, y: 0.5, z: -0.5},
+    {x: -0.5, y: 0.5, z: -0.5},
+    {x: 0.5, y: -0.5, z: -0.5},
+    {x: -0.5, y: -0.5, z: -0.5}
+    
+]
+const FPS = 60 
+let dz = 2
+let angle = 0
+
+function frame() {  
+   
+    const dt = 1/FPS
+    dz += 1 * dt
+
+    angle += 2 * Math.PI* dt
+
+    clear()
+    for (const v of vs) {
+        point(screen(project(translateZ(rotate_xyz(v, angle), dz))))
+    }   
+    setTimeout(frame, 1000/FPS)
+}
+
+frame()
+
+function translateZ({x, y, z}, dz) {
+    return {x, y, z: z + dz}
+}
+
+
+function rotate_xyz({x, y, z}, angle) {
+    
+    const c = Math.cos(angle)
+    const s = Math.sin(angle)
+
+    //rotate in plane xz not xy so y stays the same
+    return {
+        x: x*c + z*s,
+        y: y,   
+        z: -x*s + z*c
+    }
+}
+
+
+window.addEventListener("resize", resize)
+
+
+

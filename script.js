@@ -38,8 +38,9 @@ function point({x, y}) {
 
 function project({x, y, z}) {
     //applies perspective projection
+    const aspect = canvas.width / canvas.height
     return {
-        x: x/z,
+        x: x/(z * aspect),
         y: y/z
     }
 }
@@ -92,13 +93,16 @@ function frame() {
     for (const v of vs) {
         const rotated_v = rotate_xyz(v, angle)
         
-        /*
+        
         for (const dot of dots) {
             const dotToLine = screen(project(dot))
             line(screen(project(translateZ(rotated_v, dz))), dotToLine)
         }
-        */
-       for (const f of fs) {
+        
+       
+    }   
+    
+    for (const f of fs) {
             for (let i = 0; i < f.length; ++i){
                 const rotated_v1 = rotate_xyz(vs[f[i]], angle)
                 const rotated_v2 = rotate_xyz(vs[(f[(i + 1)  % f.length])], angle)
@@ -107,7 +111,6 @@ function frame() {
                 line(v1Screen, v2Screen)
             }
        }
-    }   
     setTimeout(frame, 1000/FPS)
 }
 
@@ -126,7 +129,7 @@ function rotate_xyz({x, y, z}, angle) {
     //rotate in plane xz not xy so y stays the same
     return {
         x: x*c + z*s,
-        y: y,   
+        y: y ,   
         z: -x*s + z*c
     }
 }
